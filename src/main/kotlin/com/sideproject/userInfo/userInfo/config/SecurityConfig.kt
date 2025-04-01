@@ -29,7 +29,7 @@ class SecurityConfig {
             .exceptionHandling {}
             .formLogin { it.disable() }
             .httpBasic { it.disable() }
-            .cors{}
+            .cors {}
         return http.build()
     }
 
