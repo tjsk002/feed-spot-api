@@ -18,7 +18,7 @@ class SecurityConfig {
         http
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout").permitAll()
+                auth.requestMatchers("/", "/auth/**", "/users/**").permitAll()
                     .anyRequest().authenticated()
             }
             .logout { it.disable() }
