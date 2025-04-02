@@ -1,8 +1,8 @@
 package com.sideproject.userInfo.userInfo.jwt
 
 import io.jsonwebtoken.Jwts
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -13,7 +13,7 @@ class JwtUtils(
     @Value("\${spring.jwt.secret-key}") private val secret: String
 ) {
     private val key: SecretKeySpec = SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), "HmacSHA256")
-    private val expirationSeconds = 60 * 60 * 10L // 10시간
+    private val expiredMs = 60 * 60 * 10L
 
     fun getUsername(token: String): String {
         return Jwts.parser()
@@ -38,8 +38,8 @@ class JwtUtils(
             .verifyWith(key)
             .build()
             .parseSignedClaims(token)
-            .getPayload()
-            .getExpiration().before(Date())
+            .payload
+            .expiration.before(Date())
     }
 
     fun createJwtToken(username: String, role: String): String {
@@ -47,13 +47,9 @@ class JwtUtils(
             .subject(username)
             .claim("role", role)
             .issuedAt(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + expirationSeconds))
+            .expiration(Date(System.currentTimeMillis() + expiredMs))
             .signWith(key)
             .compact()
-    }
-
-    fun validation(token: String): Boolean {
-        return false
     }
 
     // 토큰에서 username 파싱
