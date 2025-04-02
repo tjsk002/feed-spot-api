@@ -2,8 +2,9 @@ package com.sideproject.userInfo.userInfo.common.response
 
 class ErrorMessage {
     companion object {
-        const val USER_NOT_FOUND = "User not found"
-        const val DUPLICATE_USER = "Already exist user"
+        const val USER_NOT_FOUND = "Username not found"
+        const val DUPLICATE_USER = "duplicate username"
+        const val USER_ALREADY_EXISTS = "Username already exists"
 
         // 회원가입 & 계정 관련 에러
         const val USERNAME_ALREADY_EXISTS = "Username already exists"
