@@ -13,7 +13,7 @@ class JwtUtils(
     @Value("\${spring.jwt.secret-key}") private val secret: String
 ) {
     private val key: SecretKeySpec = SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), "HmacSHA256")
-    private val expiredMs = 60 * 60 * 10L
+    private val expirationSeconds = 60 * 60 * 10L // 10시간
 
     fun getUsername(token: String): String {
         return Jwts.parser()
@@ -47,7 +47,7 @@ class JwtUtils(
             .subject(username)
             .claim("role", role)
             .issuedAt(Date(System.currentTimeMillis()))
-            .expiration(Date(System.currentTimeMillis() + expiredMs))
+            .expiration(Date(System.currentTimeMillis() + expirationSeconds))
             .signWith(key)
             .compact()
     }
