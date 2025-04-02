@@ -17,5 +17,5 @@ abstract class BasicEntity {
     var updatedAt: LocalDateTime? = null
     var deletedAt: LocalDateTime? = null
 
-    // TODO TODO main 병합 테스트
+    // TODO TODO main 병합 테스트 2
 }
