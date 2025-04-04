@@ -1,5 +1,6 @@
 package com.sideproject.userInfo.userInfo.jwt
 
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -14,9 +15,7 @@ import java.util.*
 import javax.crypto.spec.SecretKeySpec
 
 @Component
-class JwtAuthenticationFilter : OncePerRequestFilter(
-
-) {
+class JwtAuthenticationFilter : OncePerRequestFilter() {
     // TODO .env get()
     private val secret = "steadfastnessvlakdfnviobaenrlkjacrofuturesecretKeywlqdprkrhtlvek88888"
     private val key: SecretKeySpec = SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), "HmacSHA256")
@@ -26,12 +25,19 @@ class JwtAuthenticationFilter : OncePerRequestFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = extractToken(request)
-        if (token != null && isValidateToken(token)) {
-            val authentication = getAuthentication(token)
-            SecurityContextHolder.getContext().authentication = authentication
+        try {
+            val token = extractToken(request)
+            if (token != null && isValidateToken(token)) {
+                val authentication = getAuthentication(token)
+                SecurityContextHolder.getContext().authentication = authentication
+            }
+
+            filterChain.doFilter(request, response)
+        } catch (expiredJwtException: ExpiredJwtException) {
+            println(expiredJwtException.message)
+        } catch (e: Exception) {
+            println(e.message)
         }
-        filterChain.doFilter(request, response)
     }
 
     private fun extractToken(request: HttpServletRequest): String? {
@@ -50,9 +56,9 @@ class JwtAuthenticationFilter : OncePerRequestFilter(
                 .payload
             val expiration = claims.expiration
             expiration.after(Date())
-            return true
+            true
         } catch (e: Exception) {
-            println(e)
+            println(e.message)
             false
         }
     }
