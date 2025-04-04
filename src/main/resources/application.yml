@@ -20,8 +20,7 @@ spring:
   sql:
     init:
       mode: always
-#      data-locations: classpath:/db/data.sql
+  #      data-locations: classpath:/db/data.sql
   jwt:
     secret-key: ${KEY}
-    access-token-expire-time: 300
-    refresh-token-expire-time: 7200
+    refresh-key: ${REFRESH_KEY}
