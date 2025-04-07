@@ -1,6 +1,7 @@
 package com.sideproject.userInfo.userInfo.common.exception
 
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
+import com.sideproject.userInfo.userInfo.common.response.ErrorUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.ValidationErrorResponse
 import org.springframework.http.HttpStatus
@@ -42,7 +43,7 @@ class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(
                 RestResponse.badRequest(
-                    mapOf("message" to ErrorMessage.INVALID_FORMAT)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.INVALID_FORMAT)
                 )
             )
     }

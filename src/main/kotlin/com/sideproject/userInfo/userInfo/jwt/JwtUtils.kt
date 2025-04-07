@@ -163,7 +163,6 @@ class JwtUtils(
         return UsernamePasswordAuthenticationToken(username, null, authorities)
     }
 
-
     fun getAccessAllClaims(token: String): Claims {
         return Jwts.parser()
             .verifyWith(accessKey)

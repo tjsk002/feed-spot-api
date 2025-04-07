@@ -2,6 +2,7 @@ package com.sideproject.userInfo.userInfo.service
 
 import com.sideproject.userInfo.userInfo.common.exception.CustomBadRequestException
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
+import com.sideproject.userInfo.userInfo.common.response.ErrorUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.SuccessMessage
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
@@ -40,7 +41,7 @@ class AdminService(
         if (isExists(adminDto.username)) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.USERNAME_ALREADY_EXISTS)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.USERNAME_ALREADY_EXISTS)
                 )
             )
         }
@@ -56,7 +57,7 @@ class AdminService(
         )
 
         return RestResponse.success(
-            mapOfParsing(SuccessMessage.SIGN_UP_SUCCESS)
+            ErrorUtils.messageMapOfParsing(SuccessMessage.SIGN_UP_SUCCESS)
         )
     }
 
@@ -69,7 +70,7 @@ class AdminService(
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
-                    mapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
                 )
             )
         }
@@ -79,7 +80,7 @@ class AdminService(
         if (blacklistedTokens.contains(token)) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
-                    mapOfParsing(ErrorMessage.ALREADY_LOGGED_OUT)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.ALREADY_LOGGED_OUT)
                 )
             )
         }
@@ -93,12 +94,12 @@ class AdminService(
 
             blacklistedTokens.add(token)
             return RestResponse.success(
-                mapOfParsing(SuccessMessage.LOGOUT_SUCCESS)
+                ErrorUtils.messageMapOfParsing(SuccessMessage.LOGOUT_SUCCESS)
             )
         } catch (e: ExpiredJwtException) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(
+                    ErrorUtils.messageMapOfParsing(
                         e.message ?: ErrorMessage.TOKEN_EXPIRED
                     )
                 )
@@ -106,7 +107,7 @@ class AdminService(
         } catch (e: Exception) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
-                    mapOfParsing(ErrorMessage.INVALID_TOKEN)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.INVALID_TOKEN)
                 )
             )
         }
@@ -122,7 +123,7 @@ class AdminService(
         if (violations.isNotEmpty()) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
                 )
             )
         }
@@ -130,7 +131,7 @@ class AdminService(
         if (!isExists(loginRequest.username)) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.USERNAME_NOT_FOUND)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.USERNAME_NOT_FOUND)
                 )
             )
         }
@@ -144,13 +145,13 @@ class AdminService(
         } catch (e: BadCredentialsException) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.INCORRECT_PASSWORD)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.INCORRECT_PASSWORD)
                 )
             )
         } catch (e: Exception) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
                 )
             )
         }
@@ -171,7 +172,7 @@ class AdminService(
         )
 
         val responseBody = RestResponse.success(
-            mapOfParsing(SuccessMessage.LOGIN_SUCCESS)
+            ErrorUtils.messageMapOfParsing(SuccessMessage.LOGIN_SUCCESS)
         )
 
         return responseBody
@@ -181,7 +182,7 @@ class AdminService(
         return adminsRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 
-    private fun mapOfParsing(message: String): Map<String, String> {
+    private fun ErrorUtils.messageMapOfParsing(message: String): Map<String, String> {
         return mapOf(
             "message" to message
         )

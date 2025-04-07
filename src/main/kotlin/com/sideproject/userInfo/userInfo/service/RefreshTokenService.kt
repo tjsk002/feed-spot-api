@@ -1,6 +1,7 @@
 package com.sideproject.userInfo.userInfo.service
 
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
+import com.sideproject.userInfo.userInfo.common.response.ErrorUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import jakarta.servlet.http.HttpServletRequest
@@ -18,15 +19,19 @@ class RefreshTokenService(
         val refreshToken = request.cookies
             ?.firstOrNull { it.name == "refreshToken" }
             ?.value ?: return RestResponse.unauthorized(
-            mapOfParsing(ErrorMessage.REFRESH_TOKEN_NOT_FOUND)
+            ErrorUtils.messageMapOfParsing(ErrorMessage.REFRESH_TOKEN_NOT_FOUND)
         )
 
         if (accessToken == null) {
-            return RestResponse.badRequest(mapOfParsing("AccessToken is missing"))
+            return RestResponse.badRequest(
+                ErrorUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_MISSING)
+            )
         }
 
         if (jwtUtils.accessValidation(accessToken)) {
-            return RestResponse.success(mapOfParsing("AccessToken still valid, no need to refresh"))
+            return RestResponse.success(
+                ErrorUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_NO_NEED_REFRESH)
+            )
         }
 
         if (jwtUtils.refreshValidation(refreshToken)) {
@@ -39,28 +44,24 @@ class RefreshTokenService(
                 response.setHeader("Authorization", "Bearer $newAccessToken")
                 val authentication = jwtUtils.getAuthenticationFromToken(newAccessToken)
                 SecurityContextHolder.getContext().authentication = authentication
-                return RestResponse.success(mapOfParsing("AccessToken refreshed"))
+                return RestResponse.success(
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_REFRESH)
+                )
             } catch (e: Exception) {
                 println("refreshToken -- $e")
             }
         } else {
             return RestResponse.badRequest(
-                mapOfParsing(
-                    "RefreshToken is invalid or expired"
+                ErrorUtils.messageMapOfParsing(
+                    ErrorMessage.REFRESH_TOKEN_INVALID
                 )
             )
         }
 
         return RestResponse.unauthorized(
-            mapOfParsing(
+            ErrorUtils.messageMapOfParsing(
                 ErrorMessage.REFRESH_TOKEN_FAILED
             )
         )
-    }
-
-    private fun mapOfParsing(message: String): Map<String, String> {
-        return mapOf(
-            "message" to message
-        );
     }
 }
