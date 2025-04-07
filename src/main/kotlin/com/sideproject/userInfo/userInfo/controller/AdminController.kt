@@ -35,12 +35,4 @@ class AdminController(
     fun logout(@RequestHeader("Authorization") authHeader: String?): ResponseEntity<RestResponse<Map<String, String>>> {
         return ResponseEntity.ok(adminService.logoutProcess(authHeader))
     }
-
-    @PostMapping("/refresh")
-    fun refreshToken(
-        request: HttpServletRequest,
-        response: HttpServletResponse
-    ): ResponseEntity<RestResponse<Map<String, String>>> {
-        return ResponseEntity.ok(adminService.refreshToken(request))
-    }
 }
