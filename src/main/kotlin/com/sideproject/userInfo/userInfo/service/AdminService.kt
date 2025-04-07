@@ -2,14 +2,17 @@ package com.sideproject.userInfo.userInfo.service
 
 import com.sideproject.userInfo.userInfo.common.exception.CustomBadRequestException
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
+import com.sideproject.userInfo.userInfo.common.response.ErrorUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.SuccessMessage
+import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
 import com.sideproject.userInfo.userInfo.data.dto.admins.AdminRequest
 import com.sideproject.userInfo.userInfo.data.dto.admins.CustomAdminDetails
 import com.sideproject.userInfo.userInfo.data.dto.admins.LoginRequest
 import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import com.sideproject.userInfo.userInfo.repository.AdminsRepository
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Validation
@@ -38,7 +41,7 @@ class AdminService(
         if (isExists(adminDto.username)) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.USERNAME_ALREADY_EXISTS)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.USERNAME_ALREADY_EXISTS)
                 )
             )
         }
@@ -54,7 +57,7 @@ class AdminService(
         )
 
         return RestResponse.success(
-            mapOfParsing(SuccessMessage.SIGN_UP_SUCCESS)
+            ErrorUtils.messageMapOfParsing(SuccessMessage.SIGN_UP_SUCCESS)
         )
     }
 
@@ -67,7 +70,7 @@ class AdminService(
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
-                    mapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
                 )
             )
         }
@@ -77,7 +80,7 @@ class AdminService(
         if (blacklistedTokens.contains(token)) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
-                    mapOfParsing(ErrorMessage.ALREADY_LOGGED_OUT)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.ALREADY_LOGGED_OUT)
                 )
             )
         }
@@ -91,12 +94,20 @@ class AdminService(
 
             blacklistedTokens.add(token)
             return RestResponse.success(
-                mapOfParsing(SuccessMessage.LOGOUT_SUCCESS)
+                ErrorUtils.messageMapOfParsing(SuccessMessage.LOGOUT_SUCCESS)
+            )
+        } catch (e: ExpiredJwtException) {
+            throw CustomBadRequestException(
+                RestResponse.badRequest(
+                    ErrorUtils.messageMapOfParsing(
+                        e.message ?: ErrorMessage.TOKEN_EXPIRED
+                    )
+                )
             )
         } catch (e: Exception) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
-                    mapOfParsing(ErrorMessage.INVALID_TOKEN)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.INVALID_TOKEN)
                 )
             )
         }
@@ -112,7 +123,7 @@ class AdminService(
         if (violations.isNotEmpty()) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
                 )
             )
         }
@@ -120,7 +131,7 @@ class AdminService(
         if (!isExists(loginRequest.username)) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.USERNAME_NOT_FOUND)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.USERNAME_NOT_FOUND)
                 )
             )
         }
@@ -134,13 +145,13 @@ class AdminService(
         } catch (e: BadCredentialsException) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.INCORRECT_PASSWORD)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.INCORRECT_PASSWORD)
                 )
             )
         } catch (e: Exception) {
             throw CustomBadRequestException(
                 RestResponse.badRequest(
-                    mapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
+                    ErrorUtils.messageMapOfParsing(ErrorMessage.LOGIN_SERVER_ERROR)
                 )
             )
         }
@@ -149,19 +160,25 @@ class AdminService(
     private fun successfulAuthentication(authentication: Authentication): RestResponse<Map<String, String>> {
         val username = (authentication.principal as CustomAdminDetails).username
         val role = authentication.authorities.iterator().next().authority
-        val token = jwtUtils.createJwtToken(username, role)
+        val accessToken = jwtUtils.createAccessToken(username, role)
+        val refreshToken = jwtUtils.createRefreshToken(username, role)
 
-        response.addHeader("Authorization", "Bearer $token")
+        jwtUtils.saveRefreshToken(accessToken, refreshToken, findAdminByUserName(username))
+
+        response.addHeader("Authorization", "Bearer $accessToken")
+        response.addHeader(
+            "Set-Cookie",
+            "refreshToken=$refreshToken; Path=/; HttpOnly; Secure; SameSite=Strict"
+        )
+
         val responseBody = RestResponse.success(
-            mapOfParsing(SuccessMessage.LOGIN_SUCCESS)
+            ErrorUtils.messageMapOfParsing(SuccessMessage.LOGIN_SUCCESS)
         )
 
         return responseBody
     }
 
-    private fun mapOfParsing(message: String): Map<String, String> {
-        return mapOf(
-            "message" to message
-        );
+    private fun findAdminByUserName(username: String): AdminsEntity {
+        return adminsRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 }
