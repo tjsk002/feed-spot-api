@@ -47,7 +47,6 @@ class UserController(
         @PathVariable(name = "userId", required = true) userId: Long,
         @RequestBody userRequestDto: UserRequestDto
     ): RestResponse<UsersDto> {
-        println("name $userId")
         return RestResponse.success(userService.editUser(userId, userRequestDto))
     }
 
