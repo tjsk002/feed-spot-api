@@ -181,10 +181,4 @@ class AdminService(
     private fun findAdminByUserName(username: String): AdminsEntity {
         return adminsRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
-
-    private fun ErrorUtils.messageMapOfParsing(message: String): Map<String, String> {
-        return mapOf(
-            "message" to message
-        )
-    }
 }
