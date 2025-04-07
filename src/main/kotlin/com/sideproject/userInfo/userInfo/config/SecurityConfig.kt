@@ -33,7 +33,10 @@ class SecurityConfig {
             .sessionManagement {
                 SessionCreationPolicy.STATELESS
             }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(
+                jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter::class.java
+            )
             .headers { }
             .exceptionHandling {}
             .formLogin { it.disable() }

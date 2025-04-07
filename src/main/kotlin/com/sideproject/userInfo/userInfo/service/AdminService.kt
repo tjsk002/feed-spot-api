@@ -4,6 +4,7 @@ import com.sideproject.userInfo.userInfo.common.exception.CustomBadRequestExcept
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.SuccessMessage
+import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
 import com.sideproject.userInfo.userInfo.data.dto.admins.AdminRequest
 import com.sideproject.userInfo.userInfo.data.dto.admins.CustomAdminDetails
 import com.sideproject.userInfo.userInfo.data.dto.admins.LoginRequest
@@ -12,6 +13,7 @@ import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import com.sideproject.userInfo.userInfo.repository.AdminsRepository
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Validation
 import org.springframework.beans.factory.annotation.Value
@@ -19,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.nio.charset.StandardCharsets
@@ -111,6 +114,51 @@ class AdminService(
         }
     }
 
+    fun refreshToken(request: HttpServletRequest): RestResponse<Map<String, String>> {
+        val accessToken: String? = request.getHeader("Authorization")?.removePrefix("Bearer ")?.trim()
+        val refreshToken = request.cookies
+            ?.firstOrNull { it.name == "refreshToken" }
+            ?.value ?: return RestResponse.unauthorized(
+            mapOfParsing(ErrorMessage.REFRESH_TOKEN_NOT_FOUND)
+        )
+
+        if (accessToken == null) {
+            return RestResponse.badRequest(mapOfParsing("AccessToken is missing"))
+        }
+
+        if (jwtUtils.accessValidation(accessToken)) {
+            return RestResponse.success(mapOfParsing("AccessToken still valid, no need to refresh"))
+        }
+
+        if (jwtUtils.refreshValidation(refreshToken)) {
+            try {
+                val claims = jwtUtils.getRefreshAllClaims(refreshToken)
+                val newAccessToken = jwtUtils.createAccessToken(
+                    claims.subject, claims["role", String::class.java]
+                )
+
+                response.setHeader("Authorization", "Bearer $newAccessToken")
+                val authentication = jwtUtils.getAuthenticationFromToken(newAccessToken)
+                SecurityContextHolder.getContext().authentication = authentication
+                return RestResponse.success(mapOfParsing("AccessToken refreshed"))
+            } catch (e: Exception) {
+                println("refreshToken -- $e")
+            }
+        } else {
+            return RestResponse.badRequest(
+                mapOfParsing(
+                    "RefreshToken is invalid or expired"
+                )
+            )
+        }
+
+        return RestResponse.unauthorized(
+            mapOfParsing(
+                ErrorMessage.REFRESH_TOKEN_FAILED
+            )
+        )
+    }
+
     private fun isExists(username: String): Boolean {
         return adminsRepository.existsByUsername(username)
     }
@@ -158,14 +206,26 @@ class AdminService(
     private fun successfulAuthentication(authentication: Authentication): RestResponse<Map<String, String>> {
         val username = (authentication.principal as CustomAdminDetails).username
         val role = authentication.authorities.iterator().next().authority
-        val token = jwtUtils.createJwtToken(username, role)
+        val accessToken = jwtUtils.createAccessToken(username, role)
+        val refreshToken = jwtUtils.createRefreshToken(username, role)
 
-        response.addHeader("Authorization", "Bearer $token")
+        jwtUtils.saveRefreshToken(accessToken, refreshToken, findAdminByUserName(username))
+
+        response.addHeader("Authorization", "Bearer $accessToken")
+        response.addHeader(
+            "Set-Cookie",
+            "refreshToken=$refreshToken; Path=/; HttpOnly; Secure; SameSite=Strict"
+        )
+
         val responseBody = RestResponse.success(
             mapOfParsing(SuccessMessage.LOGIN_SUCCESS)
         )
 
         return responseBody
+    }
+
+    private fun findAdminByUserName(username: String): AdminsEntity {
+        return adminsRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 
     private fun mapOfParsing(message: String): Map<String, String> {
