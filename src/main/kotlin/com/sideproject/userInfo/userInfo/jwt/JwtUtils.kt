@@ -80,12 +80,10 @@ class JwtUtils(
     }
 
     fun saveRefreshToken(token: String, refreshToken: String, adminsEntity: AdminsEntity) {
-        println("refreshExpired $refreshExpired")
         val expiryDate = Instant.now()
             .plusMillis(refreshExpired)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
-        println("expired $expiryDate")
         val admin = refreshTokenRepository.findByAdmin(adminsEntity)
 
         if (admin != null) {
