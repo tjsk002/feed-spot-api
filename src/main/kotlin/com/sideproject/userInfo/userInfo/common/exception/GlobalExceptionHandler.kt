@@ -14,14 +14,15 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(ex: MethodArgumentNotValidException): ResponseEntity<RestResponse<ValidationErrorResponse>> {
-        val errors = ex.bindingResult.fieldErrors.associate { it.field to (it.defaultMessage ?: "Invalid input") }
+        val errors =
+            ex.bindingResult.fieldErrors.associate { it.field to (it.defaultMessage ?: ErrorMessage.INVALID_INPUT) }
 
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(
                 RestResponse.badRequest(
                     ValidationErrorResponse(
-                        message = "Invalid input",
+                        message = ErrorMessage.INVALID_INPUT,
                         errors = errors
                     )
                 )
@@ -38,6 +39,10 @@ class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleJsonParseException(ex: HttpMessageNotReadableException): ResponseEntity<RestResponse<Map<String, String>>> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(RestResponse.badRequest(mapOf("message" to "Invalid format or required fields are missing.")))
+            .body(
+                RestResponse.badRequest(
+                    mapOf("message" to ErrorMessage.INVALID_FORMAT)
+                )
+            )
     }
 }
