@@ -20,7 +20,8 @@ class ErrorMessage {
         const val TOKEN_EXPIRED = "Token has expired"
         const val LOGIN_SERVER_ERROR = "Login failed due to server error"
         const val AUTHENTICATION_ERROR = "Authentication failed"
-        const val NO_TOKEN_PROVIDED = "No token provided"
+        const val REFRESH_TOKEN_FAILED = "Refresh token failed"
+        const val REFRESH_TOKEN_NOT_FOUND = "Refresh token not found"
 
         // 로그아웃 관련 에러
         const val NO_AUTHENTICATION_INFORMATION = "No authentication information"
