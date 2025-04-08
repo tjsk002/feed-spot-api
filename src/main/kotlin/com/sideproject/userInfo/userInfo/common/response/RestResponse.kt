@@ -45,8 +45,15 @@ data class ValidationErrorResponse(
     val errors: Map<String, String>
 )
 
-object ErrorUtils {
+object ResponseUtils {
     fun messageMapOfParsing(message: String): Map<String, String> {
         return mapOf("message" to message)
+    }
+
+    fun messageAddMapOfParsing(data: Any): Map<String, Any> {
+        return mapOf(
+            "message" to "success",
+            "data" to data
+        )
     }
 }
