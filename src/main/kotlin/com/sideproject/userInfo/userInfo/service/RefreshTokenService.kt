@@ -1,7 +1,7 @@
 package com.sideproject.userInfo.userInfo.service
 
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
-import com.sideproject.userInfo.userInfo.common.response.ErrorUtils
+import com.sideproject.userInfo.userInfo.common.response.ResponseUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import jakarta.servlet.http.HttpServletRequest
@@ -19,18 +19,18 @@ class RefreshTokenService(
         val refreshToken = request.cookies
             ?.firstOrNull { it.name == "refreshToken" }
             ?.value ?: return RestResponse.unauthorized(
-            ErrorUtils.messageMapOfParsing(ErrorMessage.REFRESH_TOKEN_NOT_FOUND)
+            ResponseUtils.messageMapOfParsing(ErrorMessage.REFRESH_TOKEN_NOT_FOUND)
         )
 
         if (accessToken == null) {
             return RestResponse.badRequest(
-                ErrorUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_MISSING)
+                ResponseUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_MISSING)
             )
         }
 
         if (jwtUtils.accessValidation(accessToken)) {
             return RestResponse.success(
-                ErrorUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_NO_NEED_REFRESH)
+                ResponseUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_NO_NEED_REFRESH)
             )
         }
 
@@ -45,21 +45,21 @@ class RefreshTokenService(
                 val authentication = jwtUtils.getAuthenticationFromToken(newAccessToken)
                 SecurityContextHolder.getContext().authentication = authentication
                 return RestResponse.success(
-                    ErrorUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_REFRESH)
+                    ResponseUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_REFRESH)
                 )
             } catch (e: Exception) {
                 println("refreshToken -- $e")
             }
         } else {
             return RestResponse.badRequest(
-                ErrorUtils.messageMapOfParsing(
+                ResponseUtils.messageMapOfParsing(
                     ErrorMessage.REFRESH_TOKEN_INVALID
                 )
             )
         }
 
         return RestResponse.unauthorized(
-            ErrorUtils.messageMapOfParsing(
+            ResponseUtils.messageMapOfParsing(
                 ErrorMessage.REFRESH_TOKEN_FAILED
             )
         )
