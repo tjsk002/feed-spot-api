@@ -11,7 +11,7 @@ class UsersEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     @Column(name = "user_name", unique = true)
-    var userName: String,
+    var username: String,
     @Column(name = "nick_name")
     var nickName: String,
     var gender: String,
@@ -21,7 +21,8 @@ class UsersEntity(
     var description: String?,
 ) : BasicEntity() {
 
-    fun editUser(userRequestDto: UserRequestDto):UsersEntity {
+    fun editUser(userRequestDto: UserRequestDto): UsersEntity {
+        this.username = userRequestDto.userData.username
         this.nickName = userRequestDto.userData.nickName
         this.gender = userRequestDto.userData.gender
         this.isActive = userRequestDto.userData.isActive
@@ -30,11 +31,10 @@ class UsersEntity(
         return this
     }
 
-
     companion object {
         fun fromDto(userRequestDto: UserRequestDto): UsersEntity {
             return UsersEntity(
-                userName = userRequestDto.userData.username,
+                username = userRequestDto.userData.username,
                 nickName = userRequestDto.userData.nickName,
                 gender = userRequestDto.userData.gender,
                 isActive = userRequestDto.userData.isActive,
