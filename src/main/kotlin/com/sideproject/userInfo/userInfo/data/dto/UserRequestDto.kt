@@ -4,11 +4,8 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
-
-
 class UserRequestDto(
     val userData: UserRequest
-
 )
 
 class UserRequest(
@@ -25,7 +22,9 @@ class UserRequest(
     val isActive: Boolean,
 
     @field:NotBlank(message = "type is required value")
-    @field:Pattern(regexp = "^(front|back|dba|infra)$", message = "type must be one of the following values: 'front', 'back', 'dba', or 'infra'."
+    @field:Pattern(
+        regexp = "^(front|back|dba|infra)$",
+        message = "type must be one of the following values: 'front', 'back', 'dba', or 'infra'."
     )
     val type: String,
 
