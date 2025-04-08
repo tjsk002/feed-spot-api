@@ -56,9 +56,11 @@ class UserService(
 
     @Transactional
     fun editUser(userId: Long, userRequestDto: UserRequestDto): RestResponse<Map<String, Any>> {
-        checkDuplicateUsername(userRequestDto.userData.username)
-
         val findUser: UsersEntity = findById(userId)
+        if (userRequestDto.userData.username != findUser.username) {
+            checkDuplicateUsername(userRequestDto.userData.username)
+        }
+
         val editedUser: UsersEntity = findUser.editUser(userRequestDto)
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(UsersDto.fromEntity(editedUser))
