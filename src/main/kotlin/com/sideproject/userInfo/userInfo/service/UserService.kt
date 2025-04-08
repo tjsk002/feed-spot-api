@@ -1,6 +1,9 @@
 package com.sideproject.userInfo.userInfo.service
 
+import com.sideproject.userInfo.userInfo.common.exception.CustomBadRequestException
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
+import com.sideproject.userInfo.userInfo.common.response.ErrorUtils
+import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
 import com.sideproject.userInfo.userInfo.data.dto.PageInfoDto
 import com.sideproject.userInfo.userInfo.data.dto.UserRequestDto
@@ -13,7 +16,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
 
 @Service
 class UserService(
@@ -65,11 +67,11 @@ class UserService(
     }
 
     private fun findUserByUserName(username: String): UsersEntity {
-        return usersRepository.findByUserName(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
+        return usersRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 
     private fun checkDuplicateUsername(username: String) {
-        if (usersRepository.existsByUserName(username)) {
+        if (usersRepository.existsByUsername(username)) {
             throw BasicException(ErrorMessage.DUPLICATE_USER)
         }
     }

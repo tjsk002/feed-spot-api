@@ -22,7 +22,7 @@ class UsersDto(
         fun fromEntity(userEntity: UsersEntity): UsersDto {
             return UsersDto(
                 userEntity.id,
-                userEntity.userName,
+                userEntity.username,
                 userEntity.nickName,
                 userEntity.gender,
                 userEntity.isActive,
