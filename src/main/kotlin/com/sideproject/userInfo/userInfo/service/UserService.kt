@@ -24,7 +24,7 @@ class UserService(
 ) {
     @Transactional(readOnly = true)
     fun getUserList(pageable: Pageable): UserResponseDto {
-        val userListDto: Page<UsersEntity> = usersRepository.findAllByDeletedAtIsNull(pageable)
+        val userListDto: Page<UsersEntity> = usersRepository.findAll(pageable)
         val userContent: List<UsersDto> = userListDto.map { userEntity -> UsersDto.fromEntity(userEntity) }.toList()
         val pageInfo = PageInfoDto(
             userListDto.number,

@@ -16,7 +16,8 @@ class UsersDto(
     val isActive: Boolean,
     val type: String,
     val description: String?,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime? = null,
+    val deletedAt: LocalDateTime? = null
 ) {
     companion object {
         fun fromEntity(userEntity: UsersEntity): UsersDto {
@@ -28,7 +29,8 @@ class UsersDto(
                 userEntity.isActive,
                 userEntity.type,
                 userEntity.description,
-                userEntity.createdAt
+                userEntity.createdAt,
+                userEntity.deletedAt
             )
         }
     }
