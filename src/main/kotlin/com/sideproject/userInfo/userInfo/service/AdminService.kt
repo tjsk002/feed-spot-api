@@ -61,20 +61,13 @@ class AdminService(
         )
     }
 
-    fun loginProcess(loginRequest: LoginRequest): RestResponse<Map<String, String>> {
+    fun loginProcess(loginRequest: LoginRequest): RestResponse<Map<String, Any>> {
         val authentication = attemptAuthentication(loginRequest)
         return successfulAuthentication(authentication)
     }
 
-    fun logoutProcess(authHeader: String?): RestResponse<Map<String, String>> {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw CustomBadRequestException(
-                RestResponse.unauthorized(
-                    ResponseUtils.messageMapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
-                )
-            )
-        }
-
+    fun logoutProcess(authHeader: String): RestResponse<Map<String, String>> {
+        validateAuthHeader(authHeader)
         val token = authHeader.replace("Bearer ", "")
 
         if (blacklistedTokens.contains(token)) {
@@ -111,6 +104,23 @@ class AdminService(
                 )
             )
         }
+    }
+
+    fun myProcess(authHeader: String): RestResponse<Map<String, Any>> {
+        validateAuthHeader(authHeader)
+        val token = authHeader.replace("Bearer ", "")
+        val username = jwtUtils.parseUsername(token)
+        val adminsEntity = findAdminByUserName(username)
+        return RestResponse.success(
+            ResponseUtils.messageAddMapOfParsing(
+                mapOf(
+                    "username" to adminsEntity.username,
+                    "nickName" to adminsEntity.nickName,
+                    "role" to adminsEntity.role,
+                    "createdAt" to adminsEntity.createdAt,
+                )
+            )
+        )
     }
 
     private fun isExists(username: String): Boolean {
@@ -157,13 +167,13 @@ class AdminService(
         }
     }
 
-    private fun successfulAuthentication(authentication: Authentication): RestResponse<Map<String, String>> {
+    private fun successfulAuthentication(authentication: Authentication): RestResponse<Map<String, Any>> {
         val username = (authentication.principal as CustomAdminDetails).username
         val role = authentication.authorities.iterator().next().authority
         val accessToken = jwtUtils.createAccessToken(username, role)
         val refreshToken = jwtUtils.createRefreshToken(username, role)
-
-        jwtUtils.saveRefreshToken(accessToken, refreshToken, findAdminByUserName(username))
+        val adminsEntity = findAdminByUserName(username)
+        jwtUtils.saveRefreshToken(accessToken, refreshToken, adminsEntity)
 
         response.addHeader("Authorization", "Bearer $accessToken")
         response.addHeader(
@@ -171,14 +181,30 @@ class AdminService(
             "refreshToken=$refreshToken; Path=/; HttpOnly; Secure; SameSite=Strict"
         )
 
-        val responseBody = RestResponse.success(
-            ResponseUtils.messageMapOfParsing(SuccessMessage.LOGIN_SUCCESS)
+        return RestResponse.success(
+            ResponseUtils.messageAddMapOfParsing(
+                mapOf(
+                    "id" to adminsEntity.id,
+                    "username" to adminsEntity.username,
+                    "nickName" to adminsEntity.nickName,
+                    "role" to adminsEntity.role,
+                    "createdAt" to adminsEntity.createdAt,
+                )
+            )
         )
-
-        return responseBody
     }
 
     private fun findAdminByUserName(username: String): AdminsEntity {
         return adminsRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
+    }
+
+    private fun validateAuthHeader(authHeader: String?) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw CustomBadRequestException(
+                RestResponse.unauthorized(
+                    ResponseUtils.messageMapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
+                )
+            )
+        }
     }
 }

@@ -26,7 +26,7 @@ class SecurityConfig {
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/", "/auth/**").permitAll()
-                    .requestMatchers("/users/**").hasRole("ADMIN")
+                    .requestMatchers("/users/**", "/my").hasRole("ADMIN")
                     .anyRequest().authenticated()
             }
             .logout { it.disable() }
