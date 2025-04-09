@@ -32,33 +32,6 @@ class JwtUtils(
     val accessExpired = 60.minutes.inWholeMilliseconds
     val refreshExpired = 7.days.inWholeMilliseconds
 
-    fun getUsername(token: String): String {
-        return Jwts.parser()
-            .verifyWith(accessKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .get("username", String::class.java)
-    }
-
-    fun getRole(token: String): String {
-        return Jwts.parser()
-            .verifyWith(accessKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .get("role", String::class.java)
-    }
-
-    fun isExpired(token: String): Boolean {
-        return Jwts.parser()
-            .verifyWith(accessKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getExpiration().before(Date())
-    }
-
     fun createAccessToken(username: String, role: String): String {
         return Jwts.builder()
             .subject(username)
@@ -85,55 +58,34 @@ class JwtUtils(
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
         val admin = refreshTokenRepository.findByAdmin(adminsEntity)
+        val refreshTokenEntity = RefreshTokenEntity(
+            id = admin?.id,
+            refreshToken = refreshToken,
+            expiryDate = expiryDate,
+            isActive = true,
+            admin = adminsEntity
+        )
 
-        if (admin != null) {
-            val refreshTokenEntity = RefreshTokenEntity(
-                id = admin.id,
-                refreshToken = refreshToken,
-                expiryDate = expiryDate,
-                isActive = true,
-                admin = adminsEntity
-            )
-            refreshTokenRepository.save(refreshTokenEntity)
-        } else {
-            val refreshTokenEntity = RefreshTokenEntity(
-                id = null,
-                refreshToken = refreshToken,
-                expiryDate = expiryDate,
-                isActive = true,
-                admin = adminsEntity
-            )
-            refreshTokenRepository.save(refreshTokenEntity)
-        }
+        refreshTokenRepository.save(refreshTokenEntity)
     }
 
     fun accessValidation(token: String): Boolean {
         return try {
-            val claims = Jwts.parser()
-                .verifyWith(accessKey)
-                .build()
-                .parseSignedClaims(token)
-                .payload
-
-            claims.expiration.after(Date())
+            val claims = getAccessAllClaims(token)
+            isExpired(claims)
         } catch (e: ExpiredJwtException) {
             println("Access token expired: ${e.message}")
             false
         } catch (e: JwtException) {
-            println("Invalid Access token: ${e.message}")
+            println("Invalid access token: ${e.message}")
             false
         }
     }
 
     fun refreshValidation(token: String): Boolean {
         return try {
-            val claims = Jwts.parser()
-                .verifyWith(refreshKey)
-                .build()
-                .parseSignedClaims(token)
-                .payload
-
-            claims.expiration.after(Date())
+            val claims = getRefreshAllClaims(token)
+            isExpired(claims)
         } catch (e: ExpiredJwtException) {
             println("Refresh token expired: ${e.message}")
             false
@@ -153,12 +105,10 @@ class JwtUtils(
     }
 
     fun getAuthenticationFromToken(token: String): UsernamePasswordAuthenticationToken {
-        val claims = getAccessAllClaims(token)
-        val username = claims.subject
-        val role = claims["role", String::class.java]
+        val role = getAccessAllClaims(token)["role", String::class.java]
         val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
 
-        return UsernamePasswordAuthenticationToken(username, null, authorities)
+        return UsernamePasswordAuthenticationToken(parseUsername(token), null, authorities)
     }
 
     fun getAccessAllClaims(token: String): Claims {
@@ -175,5 +125,9 @@ class JwtUtils(
             .build()
             .parseSignedClaims(token)
             .payload
+    }
+
+    private fun isExpired(claims: Claims): Boolean {
+        return claims.expiration.after(Date())
     }
 }
