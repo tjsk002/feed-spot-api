@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.data.dto
+package com.sideproject.userInfo.userInfo.data.dto.users
 
 import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
 import java.time.LocalDateTime

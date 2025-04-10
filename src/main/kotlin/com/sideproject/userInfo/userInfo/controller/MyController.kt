@@ -13,7 +13,7 @@ class MyController(
     private val adminService: AdminService,
 ) {
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/my")
+    @GetMapping("/admin/my")
     fun my(@RequestHeader("Authorization") authHeader: String): ResponseEntity<RestResponse<Map<String, Any>>> {
         return ResponseEntity.ok(adminService.myProcess(authHeader))
     }

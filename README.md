@@ -16,7 +16,7 @@ JDK21, Springboot, Kotlin, Spring-Security, Postgresql, Validation
 
 ### 1.1 Get User Details
 
-Endpoint: GET /users
+Endpoint: GET /admin/users
 
 Request Body:
 
@@ -48,7 +48,7 @@ Response:
 
 ### 1.2 Create User
 
-Endpoint: POST /users/create
+Endpoint: POST /admin/users/create
 
 Request Body:
 
@@ -85,7 +85,7 @@ Response:
 
 ### 1.3 Edit User
 
-Endpoint: PUT /users/edit
+Endpoint: PUT /admin/users/edit
 
 Request Body:
 
@@ -122,7 +122,7 @@ Response:
 
 ### 1.4 Delete User (Soft Delete)
 
-Endpoint: DELETE /users/delete
+Endpoint: DELETE /admin/users/delete
 
 Request Body:
 
@@ -146,7 +146,7 @@ Response:
 
 ### 1.5 Get User List
 
-Endpoint: GET /users/list
+Endpoint: GET /admin/users/list
 
 Response:
 
@@ -179,7 +179,7 @@ Response:
 
 ### 2.1 Admin Signup
 
-Endpoint: POST /auth/signup
+Endpoint: POST /admin/auth/signup
 
 Request Body:
 
@@ -234,7 +234,7 @@ Response (Bad Request): <잘못된 형식 시>
 
 ### 2.2 Admin Login
 
-Endpoint: POST /auth/login
+Endpoint: POST /admin/auth/login
 
 Request Body:
 
@@ -307,7 +307,7 @@ Response (Unauthorized): <잘못된 형식 시>
 
 ### 2.3 Admin Logout
 
-Endpoint: POST /auth/logout
+Endpoint: POST /admin/auth/logout
 
 Request Header:
 
