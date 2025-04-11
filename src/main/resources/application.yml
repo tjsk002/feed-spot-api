@@ -24,3 +24,6 @@ spring:
   jwt:
     secret-key: ${KEY}
     refresh-key: ${REFRESH_KEY}
+  kobis:
+    kobis-key: ${KOBIS_KEY}
+
