@@ -52,8 +52,14 @@ object ResponseUtils {
 
     fun messageAddMapOfParsing(data: Any): Map<String, Any> {
         return mapOf(
-            "message" to "success",
+            "message" to SuccessMessage.SUCCESS,
             "data" to data
         )
+    }
+}
+
+class SuccessMessage {
+    companion object {
+        const val SUCCESS = "success"
     }
 }

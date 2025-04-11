@@ -57,7 +57,7 @@ class AdminService(
         )
 
         return RestResponse.success(
-            ResponseUtils.messageMapOfParsing(SuccessMessage.SIGN_UP_SUCCESS)
+            ResponseUtils.messageMapOfParsing(SuccessMessage.SUCCESS)
         )
     }
 
@@ -87,7 +87,7 @@ class AdminService(
 
             blacklistedTokens.add(token)
             return RestResponse.success(
-                ResponseUtils.messageMapOfParsing(SuccessMessage.LOGOUT_SUCCESS)
+                ResponseUtils.messageMapOfParsing(SuccessMessage.SUCCESS)
             )
         } catch (e: ExpiredJwtException) {
             throw CustomBadRequestException(
