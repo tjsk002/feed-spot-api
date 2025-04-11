@@ -1,8 +1,9 @@
 package com.sideproject.userInfo.userInfo.repository
 
 import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
+import com.sideproject.userInfo.userInfo.repository.admin.AdminsRepository
+import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
 import org.assertj.core.api.Assertions.assertThat
-import org.mockito.Mock
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import kotlin.test.Test
@@ -30,8 +31,8 @@ class UsersRepositoryTests {
         val newUser: UsersEntity = UsersEntity(
             1, "new user", "nickName", "girl", false, "false", "description",
         )
-        val savedUser=usersRepo.save(newUser)
-        assertThat(savedUser.userName).isEqualTo("new user")
+        val savedUser = usersRepo.save(newUser)
+        assertThat(savedUser.username).isEqualTo("new user")
         println("test end")
     }
 
