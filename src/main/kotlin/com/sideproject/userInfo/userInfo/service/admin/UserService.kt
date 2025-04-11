@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.service
+package com.sideproject.userInfo.userInfo.service.admin
 
 import com.sideproject.userInfo.userInfo.common.exception.CustomBadRequestException
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
@@ -10,7 +10,7 @@ import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UserResponseDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UsersDto
 import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
-import com.sideproject.userInfo.userInfo.repository.UsersRepository
+import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull

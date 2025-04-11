@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.repository
+package com.sideproject.userInfo.userInfo.repository.admin
 
 import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
 import org.springframework.data.domain.Page

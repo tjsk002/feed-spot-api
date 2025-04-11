@@ -1,8 +1,8 @@
-package com.sideproject.userInfo.userInfo.service
+package com.sideproject.userInfo.userInfo.service.admin
 
 import com.sideproject.userInfo.userInfo.data.dto.admins.CustomAdminDetails
 import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
-import com.sideproject.userInfo.userInfo.repository.AdminsRepository
+import com.sideproject.userInfo.userInfo.repository.admin.AdminsRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException

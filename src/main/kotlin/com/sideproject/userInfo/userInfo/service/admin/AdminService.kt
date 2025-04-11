@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.service
+package com.sideproject.userInfo.userInfo.service.admin
 
 import com.sideproject.userInfo.userInfo.common.exception.CustomBadRequestException
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
@@ -11,7 +11,7 @@ import com.sideproject.userInfo.userInfo.data.dto.admins.CustomAdminDetails
 import com.sideproject.userInfo.userInfo.data.dto.admins.LoginRequest
 import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
-import com.sideproject.userInfo.userInfo.repository.AdminsRepository
+import com.sideproject.userInfo.userInfo.repository.admin.AdminsRepository
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import jakarta.servlet.http.HttpServletResponse
@@ -57,7 +57,7 @@ class AdminService(
         )
 
         return RestResponse.success(
-            ResponseUtils.messageMapOfParsing(SuccessMessage.SIGN_UP_SUCCESS)
+            ResponseUtils.messageMapOfParsing(SuccessMessage.SUCCESS)
         )
     }
 
@@ -87,7 +87,7 @@ class AdminService(
 
             blacklistedTokens.add(token)
             return RestResponse.success(
-                ResponseUtils.messageMapOfParsing(SuccessMessage.LOGOUT_SUCCESS)
+                ResponseUtils.messageMapOfParsing(SuccessMessage.SUCCESS)
             )
         } catch (e: ExpiredJwtException) {
             throw CustomBadRequestException(

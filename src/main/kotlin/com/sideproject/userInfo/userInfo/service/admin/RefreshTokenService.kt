@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.service
+package com.sideproject.userInfo.userInfo.service.admin
 
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
 import com.sideproject.userInfo.userInfo.common.response.ResponseUtils
