@@ -1,7 +1,7 @@
-package com.sideproject.userInfo.userInfo.controller
+package com.sideproject.userInfo.userInfo.controller.admin
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
-import com.sideproject.userInfo.userInfo.service.RefreshTokenService
+import com.sideproject.userInfo.userInfo.service.admin.RefreshTokenService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity

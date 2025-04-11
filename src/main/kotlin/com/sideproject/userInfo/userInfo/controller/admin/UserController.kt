@@ -1,9 +1,9 @@
-package com.sideproject.userInfo.userInfo.controller
+package com.sideproject.userInfo.userInfo.controller.admin
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UserResponseDto
-import com.sideproject.userInfo.userInfo.service.UserService
+import com.sideproject.userInfo.userInfo.service.admin.UserService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort

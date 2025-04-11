@@ -1,9 +1,9 @@
-package com.sideproject.userInfo.userInfo.controller
+package com.sideproject.userInfo.userInfo.controller.admin
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.data.dto.admins.AdminRequest
 import com.sideproject.userInfo.userInfo.data.dto.admins.LoginRequest
-import com.sideproject.userInfo.userInfo.service.AdminService
+import com.sideproject.userInfo.userInfo.service.admin.AdminService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
