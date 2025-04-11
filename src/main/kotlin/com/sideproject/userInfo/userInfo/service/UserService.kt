@@ -5,10 +5,10 @@ import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
 import com.sideproject.userInfo.userInfo.common.response.ResponseUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
-import com.sideproject.userInfo.userInfo.data.dto.PageInfoDto
-import com.sideproject.userInfo.userInfo.data.dto.UserRequestDto
-import com.sideproject.userInfo.userInfo.data.dto.UserResponseDto
-import com.sideproject.userInfo.userInfo.data.dto.UsersDto
+import com.sideproject.userInfo.userInfo.data.dto.users.PageInfoDto
+import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
+import com.sideproject.userInfo.userInfo.data.dto.users.UserResponseDto
+import com.sideproject.userInfo.userInfo.data.dto.users.UsersDto
 import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
 import com.sideproject.userInfo.userInfo.repository.UsersRepository
 import org.springframework.data.domain.Page

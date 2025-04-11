@@ -1,8 +1,8 @@
 package com.sideproject.userInfo.userInfo.controller
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
-import com.sideproject.userInfo.userInfo.data.dto.UserRequestDto
-import com.sideproject.userInfo.userInfo.data.dto.UserResponseDto
+import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
+import com.sideproject.userInfo.userInfo.data.dto.users.UserResponseDto
 import com.sideproject.userInfo.userInfo.service.UserService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
@@ -13,7 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 class UserController(
     private val userService: UserService
 ) {

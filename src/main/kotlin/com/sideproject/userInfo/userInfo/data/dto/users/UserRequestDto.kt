@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.data.dto
+package com.sideproject.userInfo.userInfo.data.dto.users
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern

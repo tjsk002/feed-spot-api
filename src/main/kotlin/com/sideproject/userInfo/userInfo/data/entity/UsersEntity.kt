@@ -1,6 +1,6 @@
 package com.sideproject.userInfo.userInfo.data.entity
 
-import com.sideproject.userInfo.userInfo.data.dto.UserRequestDto
+import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import jakarta.persistence.*
 
 
