@@ -2,7 +2,7 @@ package com.sideproject.userInfo.userInfo.jwt
 
 import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
 import com.sideproject.userInfo.userInfo.data.entity.RefreshTokenEntity
-import com.sideproject.userInfo.userInfo.repository.RefreshTokenRepository
+import com.sideproject.userInfo.userInfo.repository.admin.RefreshTokenRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.JwtException
