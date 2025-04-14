@@ -3,7 +3,6 @@ package com.sideproject.userInfo.userInfo.data.entity
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import jakarta.persistence.*
 
-
 @Entity
 @Table(name = "USERS")
 class UsersEntity(
@@ -18,6 +17,8 @@ class UsersEntity(
     @Column(name = "is_active")
     var isActive: Boolean,
     var type: String,
+    var role: String,
+    var password: String,
     var description: String?,
 ) : BasicEntity() {
 
@@ -27,6 +28,8 @@ class UsersEntity(
         this.gender = userRequestDto.userData.gender
         this.isActive = userRequestDto.userData.isActive
         this.type = userRequestDto.userData.type
+        this.role = userRequestDto.userData.role
+        this.password = userRequestDto.userData.password
         this.description = userRequestDto.userData.description
         return this
     }
@@ -39,7 +42,9 @@ class UsersEntity(
                 gender = userRequestDto.userData.gender,
                 isActive = userRequestDto.userData.isActive,
                 type = userRequestDto.userData.type,
-                description = userRequestDto.userData.description
+                role = userRequestDto.userData.role,
+                password = userRequestDto.userData.password,
+                description = userRequestDto.userData.description,
             )
         }
     }
