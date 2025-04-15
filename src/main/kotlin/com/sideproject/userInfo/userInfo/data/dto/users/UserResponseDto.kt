@@ -1,6 +1,6 @@
 package com.sideproject.userInfo.userInfo.data.dto.users
 
-import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
+import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import java.time.LocalDateTime
 
 class UserResponseDto(
@@ -20,7 +20,7 @@ class UsersDto(
     val deletedAt: LocalDateTime? = null
 ) {
     companion object {
-        fun fromEntity(userEntity: UsersEntity): UsersDto {
+        fun fromEntity(userEntity: UserEntity): UsersDto {
             return UsersDto(
                 userEntity.id,
                 userEntity.username,

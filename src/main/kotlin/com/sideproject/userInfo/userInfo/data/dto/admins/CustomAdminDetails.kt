@@ -1,24 +1,24 @@
 package com.sideproject.userInfo.userInfo.data.dto.admins
 
-import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
+import com.sideproject.userInfo.userInfo.data.entity.AdminEntity
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class CustomAdminDetails(
-    private val adminsEntity: AdminsEntity,
+    private val adminEntity: AdminEntity,
 ) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> {
         val authorities: MutableList<GrantedAuthority> = mutableListOf()
-        authorities.add(GrantedAuthority { adminsEntity.role })
+        authorities.add(GrantedAuthority { adminEntity.role })
         return authorities
     }
 
     override fun getUsername(): String {
-        return adminsEntity.username
+        return adminEntity.username
     }
 
     override fun getPassword(): String {
-        return adminsEntity.password
+        return adminEntity.password
     }
 
     override fun isEnabled(): Boolean {

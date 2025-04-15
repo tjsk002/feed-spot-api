@@ -1,6 +1,6 @@
 package com.sideproject.userInfo.userInfo.repository
 
-import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
+import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.repository.admin.AdminsRepository
 import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -28,7 +28,7 @@ class UsersRepositoryTests {
     @Test
     protected fun userPostRepoTest() {
         println("test start")
-        val newUser: UsersEntity = UsersEntity(
+        val newUser: UserEntity = UserEntity(
             1, "new user", "nickName", "girl", false.toString(), "USER", true, "back", "description",
         )
         val savedUser = usersRepo.save(newUser)

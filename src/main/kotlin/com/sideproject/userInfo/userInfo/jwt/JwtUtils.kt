@@ -1,8 +1,8 @@
 package com.sideproject.userInfo.userInfo.jwt
 
-import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
+import com.sideproject.userInfo.userInfo.data.entity.AdminEntity
 import com.sideproject.userInfo.userInfo.data.entity.RefreshTokenEntity
-import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
+import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.repository.admin.RefreshTokenRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
@@ -54,33 +54,33 @@ class JwtUtils(
             .compact()
     }
 
-    fun saveAdminRefreshToken(token: String, refreshToken: String, adminsEntity: AdminsEntity) {
+    fun saveAdminRefreshToken(token: String, refreshToken: String, adminEntity: AdminEntity) {
         val expiryDate = Instant.now()
             .plusMillis(refreshExpired)
             .atZone(ZoneId.systemDefault())
             .toLocalDateTime()
-        val admin = refreshTokenRepository.findByAdmin(adminsEntity)
+        val admin = refreshTokenRepository.findByAdmin(adminEntity)
         val refreshTokenEntity = RefreshTokenEntity(
             id = admin?.id,
             refreshToken = refreshToken,
             expiryDate = expiryDate,
             isActive = true,
             role = RefreshTokenEntity.Role.ADMIN,
-            admin = adminsEntity,
+            admin = adminEntity,
         )
 
         refreshTokenRepository.save(refreshTokenEntity)
     }
 
-    fun userSaveRefreshToken(token: String, refreshToken: String, usersEntity: UsersEntity) {
-        val user = refreshTokenRepository.findByUser(usersEntity)
+    fun userSaveRefreshToken(token: String, refreshToken: String, userEntity: UserEntity) {
+        val user = refreshTokenRepository.findByUser(userEntity)
         val refreshTokenEntity = RefreshTokenEntity(
             id = user?.id,
             refreshToken = refreshToken,
             expiryDate = expiryDate(),
             isActive = true,
             role = RefreshTokenEntity.Role.USER,
-            user = usersEntity,
+            user = userEntity,
         )
 
         refreshTokenRepository.save(refreshTokenEntity)
