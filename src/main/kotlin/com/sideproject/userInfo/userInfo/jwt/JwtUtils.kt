@@ -52,7 +52,7 @@ class JwtUtils(
             .compact()
     }
 
-    fun saveRefreshToken(token: String, refreshToken: String, adminsEntity: AdminsEntity) {
+    fun saveAdminRefreshToken(token: String, refreshToken: String, adminsEntity: AdminsEntity) {
         val expiryDate = Instant.now()
             .plusMillis(refreshExpired)
             .atZone(ZoneId.systemDefault())
@@ -63,7 +63,8 @@ class JwtUtils(
             refreshToken = refreshToken,
             expiryDate = expiryDate,
             isActive = true,
-            admin = adminsEntity
+            role = RefreshTokenEntity.Role.ADMIN,
+            admin = adminsEntity,
         )
 
         refreshTokenRepository.save(refreshTokenEntity)

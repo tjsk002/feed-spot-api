@@ -173,7 +173,7 @@ class AdminService(
         val accessToken = jwtUtils.createAccessToken(username, role)
         val refreshToken = jwtUtils.createRefreshToken(username, role)
         val adminsEntity = findAdminByUserName(username)
-        jwtUtils.saveRefreshToken(accessToken, refreshToken, adminsEntity)
+        jwtUtils.saveAdminRefreshToken(accessToken, refreshToken, adminsEntity)
 
         response.addHeader("Authorization", "Bearer $accessToken")
         response.addHeader(
