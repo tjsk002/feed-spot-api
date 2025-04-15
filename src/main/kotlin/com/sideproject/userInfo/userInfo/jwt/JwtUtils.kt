@@ -2,6 +2,7 @@ package com.sideproject.userInfo.userInfo.jwt
 
 import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
 import com.sideproject.userInfo.userInfo.data.entity.RefreshTokenEntity
+import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
 import com.sideproject.userInfo.userInfo.repository.admin.RefreshTokenRepository
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
@@ -14,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 import javax.crypto.spec.SecretKeySpec
@@ -68,6 +70,27 @@ class JwtUtils(
         )
 
         refreshTokenRepository.save(refreshTokenEntity)
+    }
+
+    fun userSaveRefreshToken(token: String, refreshToken: String, usersEntity: UsersEntity) {
+        val user = refreshTokenRepository.findByUser(usersEntity)
+        val refreshTokenEntity = RefreshTokenEntity(
+            id = user?.id,
+            refreshToken = refreshToken,
+            expiryDate = expiryDate(),
+            isActive = true,
+            role = RefreshTokenEntity.Role.USER,
+            user = usersEntity,
+        )
+
+        refreshTokenRepository.save(refreshTokenEntity)
+    }
+
+    private fun expiryDate(): LocalDateTime {
+        return Instant.now()
+            .plusMillis(refreshExpired)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
     }
 
     fun accessValidation(token: String): Boolean {
