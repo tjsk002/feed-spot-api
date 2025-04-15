@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.controller.admin
+package com.sideproject.userInfo.userInfo.controller
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.service.admin.RefreshTokenService
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/admin/auth")
+@RequestMapping("/auth")
 @Validated
 class RefreshTokenController(
     private val refreshTokenService: RefreshTokenService,
