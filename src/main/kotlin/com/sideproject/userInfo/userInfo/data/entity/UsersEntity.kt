@@ -2,6 +2,7 @@ package com.sideproject.userInfo.userInfo.data.entity
 
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import jakarta.persistence.*
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Entity
 @Table(name = "USERS")
@@ -29,7 +30,7 @@ class UsersEntity(
         this.isActive = userRequestDto.userData.isActive
         this.type = userRequestDto.userData.type
         this.role = userRequestDto.userData.role
-        this.password = userRequestDto.userData.password
+        this.password = BCryptPasswordEncoder().encode(userRequestDto.userData.password)
         this.description = userRequestDto.userData.description
         return this
     }
@@ -43,7 +44,7 @@ class UsersEntity(
                 isActive = userRequestDto.userData.isActive,
                 type = userRequestDto.userData.type,
                 role = userRequestDto.userData.role,
-                password = userRequestDto.userData.password,
+                password = BCryptPasswordEncoder().encode(userRequestDto.userData.password),
                 description = userRequestDto.userData.description,
             )
         }
