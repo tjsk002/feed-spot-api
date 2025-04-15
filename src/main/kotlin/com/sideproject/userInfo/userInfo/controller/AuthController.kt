@@ -1,6 +1,7 @@
 package com.sideproject.userInfo.userInfo.controller
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
+import com.sideproject.userInfo.userInfo.data.dto.users.LoginRequest
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequest
 import com.sideproject.userInfo.userInfo.service.AuthService
 import jakarta.validation.Valid
@@ -22,5 +23,12 @@ class AuthController(
         @RequestBody @Valid authDto: UserRequest,
     ): ResponseEntity<RestResponse<Map<String, String>>> {
         return ResponseEntity.ok(authService.signUpProcess(authDto))
+    }
+
+    @PostMapping("/login")
+    fun login(
+        @RequestBody @Valid loginRequest: LoginRequest,
+    ): ResponseEntity<RestResponse<Map<String, Any>>> {
+        return ResponseEntity.ok(authService.loginProcess(loginRequest))
     }
 }

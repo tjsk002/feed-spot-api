@@ -29,7 +29,7 @@ class UsersRepositoryTests {
     protected fun userPostRepoTest() {
         println("test start")
         val newUser: UsersEntity = UsersEntity(
-            1, "new user", "nickName", "girl", false, "false", "description",
+            1, "new user", "nickName", "girl", false.toString(), "USER", true, "back", "description",
         )
         val savedUser = usersRepo.save(newUser)
         assertThat(savedUser.username).isEqualTo("new user")

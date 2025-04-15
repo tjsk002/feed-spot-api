@@ -19,7 +19,19 @@ data class RefreshTokenEntity(
     @Column(name = "is_active", nullable = false)
     val isActive: Boolean,
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    val role: Role,
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
-    val admin: AdminsEntity
-)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
+    val user: UsersEntity? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = true)
+    val admin: AdminsEntity? = null
+) {
+    enum class Role {
+        ADMIN, USER
+    }
+}
