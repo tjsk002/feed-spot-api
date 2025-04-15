@@ -25,7 +25,7 @@ data class RefreshTokenEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
-    val user: UsersEntity? = null,
+    val user: UserEntity? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = true)

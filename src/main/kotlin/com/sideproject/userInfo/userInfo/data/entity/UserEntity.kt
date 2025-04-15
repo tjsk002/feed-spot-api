@@ -6,7 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @Entity
 @Table(name = "USERS")
-class UsersEntity(
+class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
@@ -23,7 +23,7 @@ class UsersEntity(
     var description: String?,
 ) : BasicEntity() {
 
-    fun editUser(userRequestDto: UserRequestDto): UsersEntity {
+    fun editUser(userRequestDto: UserRequestDto): UserEntity {
         this.username = userRequestDto.userData.username
         this.nickName = userRequestDto.userData.nickName
         this.gender = userRequestDto.userData.gender
@@ -36,8 +36,8 @@ class UsersEntity(
     }
 
     companion object {
-        fun fromDto(userRequestDto: UserRequestDto): UsersEntity {
-            return UsersEntity(
+        fun fromDto(userRequestDto: UserRequestDto): UserEntity {
+            return UserEntity(
                 username = userRequestDto.userData.username,
                 nickName = userRequestDto.userData.nickName,
                 gender = userRequestDto.userData.gender,

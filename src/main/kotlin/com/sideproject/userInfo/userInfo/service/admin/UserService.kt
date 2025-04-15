@@ -9,7 +9,7 @@ import com.sideproject.userInfo.userInfo.data.dto.users.PageInfoDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UserResponseDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UsersDto
-import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
+import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -24,7 +24,7 @@ class UserService(
 ) {
     @Transactional(readOnly = true)
     fun getUserList(pageable: Pageable): UserResponseDto {
-        val userListDto: Page<UsersEntity> = usersRepository.findAll(pageable)
+        val userListDto: Page<UserEntity> = usersRepository.findAll(pageable)
         val userContent: List<UsersDto> = userListDto.map { userEntity -> UsersDto.fromEntity(userEntity) }.toList()
         val pageInfo = PageInfoDto(
             userListDto.number,
@@ -47,8 +47,8 @@ class UserService(
     fun createUser(userRequestDto: UserRequestDto): RestResponse<Map<String, Any>> {
         checkDuplicateUsername(userRequestDto.userData.username)
 
-        val newUser: UsersEntity = UsersEntity.fromDto(userRequestDto)
-        val savedUser: UsersEntity = usersRepository.save(newUser)
+        val newUser: UserEntity = UserEntity.fromDto(userRequestDto)
+        val savedUser: UserEntity = usersRepository.save(newUser)
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(UsersDto.fromEntity(savedUser))
         )
@@ -56,12 +56,12 @@ class UserService(
 
     @Transactional
     fun editUser(userId: Long, userRequestDto: UserRequestDto): RestResponse<Map<String, Any>> {
-        val findUser: UsersEntity = findById(userId)
+        val findUser: UserEntity = findById(userId)
         if (userRequestDto.userData.username != findUser.username) {
             checkDuplicateUsername(userRequestDto.userData.username)
         }
 
-        val editedUser: UsersEntity = findUser.editUser(userRequestDto)
+        val editedUser: UserEntity = findUser.editUser(userRequestDto)
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(UsersDto.fromEntity(editedUser))
         )
@@ -69,18 +69,18 @@ class UserService(
 
     @Transactional
     fun deleteUser(userId: Long): RestResponse<Map<String, Any>> {
-        val findUser: UsersEntity = findById(userId)
+        val findUser: UserEntity = findById(userId)
         findUser.deletedAt = LocalDateTime.now()
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(UsersDto.fromEntity(findUser))
         )
     }
 
-    private fun findById(userId: Long): UsersEntity {
+    private fun findById(userId: Long): UserEntity {
         return usersRepository.findByIdOrNull(userId) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 
-    private fun findUserByUserName(username: String): UsersEntity {
+    private fun findUserByUserName(username: String): UserEntity {
         return usersRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 

@@ -9,7 +9,7 @@ import com.sideproject.userInfo.userInfo.common.response.SuccessMessage
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
 import com.sideproject.userInfo.userInfo.data.dto.users.LoginRequest
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequest
-import com.sideproject.userInfo.userInfo.data.entity.UsersEntity
+import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
 import jakarta.servlet.http.HttpServletResponse
@@ -37,7 +37,7 @@ class AuthService(
             )
         }
         usersRepository.save(
-            UsersEntity(
+            UserEntity(
                 username = usersDto.username,
                 nickName = usersDto.nickName,
                 gender = usersDto.gender,
@@ -67,8 +67,8 @@ class AuthService(
         val role = authentication.authorities.iterator().next().authority
         val accessToken = jwtUtils.createAccessToken(username, role)
         val refreshToken = jwtUtils.createRefreshToken(username, role)
-        val usersEntity = findByUserName(username)
-        jwtUtils.userSaveRefreshToken(accessToken, refreshToken, usersEntity)
+        val userEntity = findByUserName(username)
+        jwtUtils.userSaveRefreshToken(accessToken, refreshToken, userEntity)
         response.addHeader("Authorization", "Bearer $accessToken")
         response.addHeader(
             "Set-Cookie",
@@ -78,11 +78,11 @@ class AuthService(
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(
                 mapOf(
-                    "id" to usersEntity.id,
-                    "username" to usersEntity.username,
-                    "nickName" to usersEntity.nickName,
-                    "role" to usersEntity.role,
-                    "createdAt" to usersEntity.createdAt,
+                    "id" to userEntity.id,
+                    "username" to userEntity.username,
+                    "nickName" to userEntity.nickName,
+                    "role" to userEntity.role,
+                    "createdAt" to userEntity.createdAt,
                 )
             )
         )
@@ -128,7 +128,7 @@ class AuthService(
         }
     }
 
-    private fun findByUserName(username: String): UsersEntity {
+    private fun findByUserName(username: String): UserEntity {
         return usersRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 }
