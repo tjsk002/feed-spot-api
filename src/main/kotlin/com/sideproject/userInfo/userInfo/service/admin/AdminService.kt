@@ -9,7 +9,7 @@ import com.sideproject.userInfo.userInfo.common.response.exception.BasicExceptio
 import com.sideproject.userInfo.userInfo.data.dto.admins.AdminRequest
 import com.sideproject.userInfo.userInfo.data.dto.admins.CustomAdminDetails
 import com.sideproject.userInfo.userInfo.data.dto.admins.LoginRequest
-import com.sideproject.userInfo.userInfo.data.entity.AdminsEntity
+import com.sideproject.userInfo.userInfo.data.entity.AdminEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import com.sideproject.userInfo.userInfo.repository.admin.AdminsRepository
 import io.jsonwebtoken.ExpiredJwtException
@@ -47,7 +47,7 @@ class AdminService(
         }
 
         adminsRepository.save(
-            AdminsEntity(
+            AdminEntity(
                 id = null,
                 username = adminDto.username,
                 nickName = adminDto.nickName,
@@ -110,14 +110,14 @@ class AdminService(
         validateAuthHeader(authHeader)
         val token = authHeader.replace("Bearer ", "")
         val username = jwtUtils.parseUsername(token)
-        val adminsEntity = findAdminByUserName(username)
+        val adminEntity = findAdminByUserName(username)
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(
                 mapOf(
-                    "username" to adminsEntity.username,
-                    "nickName" to adminsEntity.nickName,
-                    "role" to adminsEntity.role,
-                    "createdAt" to adminsEntity.createdAt,
+                    "username" to adminEntity.username,
+                    "nickName" to adminEntity.nickName,
+                    "role" to adminEntity.role,
+                    "createdAt" to adminEntity.createdAt,
                 )
             )
         )
@@ -172,8 +172,8 @@ class AdminService(
         val role = authentication.authorities.iterator().next().authority
         val accessToken = jwtUtils.createAccessToken(username, role)
         val refreshToken = jwtUtils.createRefreshToken(username, role)
-        val adminsEntity = findAdminByUserName(username)
-        jwtUtils.saveAdminRefreshToken(accessToken, refreshToken, adminsEntity)
+        val adminEntity = findAdminByUserName(username)
+        jwtUtils.saveAdminRefreshToken(accessToken, refreshToken, adminEntity)
 
         response.addHeader("Authorization", "Bearer $accessToken")
         response.addHeader(
@@ -184,17 +184,17 @@ class AdminService(
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(
                 mapOf(
-                    "id" to adminsEntity.id,
-                    "username" to adminsEntity.username,
-                    "nickName" to adminsEntity.nickName,
-                    "role" to adminsEntity.role,
-                    "createdAt" to adminsEntity.createdAt,
+                    "id" to adminEntity.id,
+                    "username" to adminEntity.username,
+                    "nickName" to adminEntity.nickName,
+                    "role" to adminEntity.role,
+                    "createdAt" to adminEntity.createdAt,
                 )
             )
         )
     }
 
-    private fun findAdminByUserName(username: String): AdminsEntity {
+    private fun findAdminByUserName(username: String): AdminEntity {
         return adminsRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 

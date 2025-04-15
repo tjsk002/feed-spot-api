@@ -29,7 +29,7 @@ data class RefreshTokenEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = true)
-    val admin: AdminsEntity? = null
+    val admin: AdminEntity? = null
 ) {
     enum class Role {
         ADMIN, USER
