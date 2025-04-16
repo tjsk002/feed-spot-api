@@ -128,7 +128,7 @@ class AuthService(
         }
     }
 
-    private fun findByUserName(username: String): UserEntity {
+    fun findByUserName(username: String): UserEntity {
         return usersRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 }
