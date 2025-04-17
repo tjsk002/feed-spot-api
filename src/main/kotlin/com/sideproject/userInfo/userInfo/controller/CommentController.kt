@@ -2,10 +2,14 @@ package com.sideproject.userInfo.userInfo.controller
 
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.data.dto.services.CommentRequest
+import com.sideproject.userInfo.userInfo.data.dto.services.CommentResponseDto
 import com.sideproject.userInfo.userInfo.service.AuthService
 import com.sideproject.userInfo.userInfo.service.CommentService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 
@@ -17,10 +21,14 @@ class CommentController(
     private val authService: AuthService,
 ) {
     @GetMapping("/comments")
-    fun getCommentList(date: String): ResponseEntity<RestResponse<Map<String, Any>>> {
-        return ResponseEntity.ok(commentService.getCommentList(date))
+    fun getCommentList(
+        @PageableDefault(size = 10) pageable: Pageable,
+        date: String
+    ): ResponseEntity<CommentResponseDto> {
+        return ResponseEntity.ok(commentService.getCommentList(pageable, date))
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/comments")
     fun createComment(
         @RequestBody @Valid
