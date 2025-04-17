@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig {
     @Bean
     fun SecurityFilterChain(
@@ -25,7 +25,9 @@ class SecurityConfig {
         http
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/", "/auth/**", "/admin/auth/**", "/movies").permitAll()
+                auth.requestMatchers(
+                    "/", "/auth/**", "/admin/auth/**", "/movies", "/api/users/comments"
+                ).permitAll()
                     .requestMatchers("/admin/users/**", "/admin/my").hasRole("ADMIN")
                     .anyRequest().authenticated()
             }
