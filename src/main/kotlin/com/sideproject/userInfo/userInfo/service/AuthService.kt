@@ -9,25 +9,39 @@ import com.sideproject.userInfo.userInfo.common.response.SuccessMessage
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
 import com.sideproject.userInfo.userInfo.data.dto.users.LoginRequest
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequest
+import com.sideproject.userInfo.userInfo.data.entity.RefreshTokenEntity
 import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
+import com.sideproject.userInfo.userInfo.repository.admin.RefreshTokenRepository
 import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
+import jakarta.servlet.http.Cookie
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Validation
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.nio.charset.StandardCharsets
+import javax.crypto.spec.SecretKeySpec
 
 @Service
 class AuthService(
     private val usersRepository: UsersRepository,
     private val authenticationManager: AuthenticationManager,
+    private val refreshRepository: RefreshTokenRepository,
     private val jwtUtils: JwtUtils,
     private val response: HttpServletResponse,
+    @Value("\${spring.jwt.secret-key}") private val secret: String
 ) {
+    private val blacklistedTokens = mutableSetOf<String>()
+    private val key: SecretKeySpec = SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), "HmacSHA256")
+
     fun signUpProcess(usersDto: UserRequest): RestResponse<Map<String, String>> {
         if (isExists(usersDto.username)) {
             throw CustomBadRequestException(
@@ -128,7 +142,76 @@ class AuthService(
         }
     }
 
+    fun logoutProcess(
+        authHeader: String,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): RestResponse<Map<String, String>> {
+        validateAuthHeader(authHeader)
+        val token = authHeader.replace("Bearer ", "")
+        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value
+
+        if (blacklistedTokens.contains(token)) {
+            throw CustomBadRequestException(
+                RestResponse.unauthorized(
+                    ResponseUtils.messageMapOfParsing(ErrorMessage.ALREADY_LOGGED_OUT)
+                )
+            )
+        }
+
+        if (refreshToken != null) {
+            val tokenEntity = refreshRepository.findByRefreshToken(refreshToken)
+            tokenEntity?.let {
+                it.deactivate()
+                refreshRepository.save(it)
+            }
+
+            val expiredCookie = Cookie("refreshToken", null)
+            expiredCookie.path = "/"
+            expiredCookie.isHttpOnly = true
+            expiredCookie.maxAge = 0
+            response.addCookie(expiredCookie)
+        }
+
+        try {
+            Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .payload
+
+            blacklistedTokens.add(token)
+            return RestResponse.success(
+                ResponseUtils.messageMapOfParsing(SuccessMessage.SUCCESS)
+            )
+        } catch (e: ExpiredJwtException) {
+            throw CustomBadRequestException(
+                RestResponse.badRequest(
+                    ResponseUtils.messageMapOfParsing(
+                        e.message ?: ErrorMessage.TOKEN_EXPIRED
+                    )
+                )
+            )
+        } catch (e: Exception) {
+            throw CustomBadRequestException(
+                RestResponse.unauthorized(
+                    ResponseUtils.messageMapOfParsing(ErrorMessage.INVALID_TOKEN)
+                )
+            )
+        }
+    }
+
     fun findByUserName(username: String): UserEntity {
         return usersRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
+    }
+
+    private fun validateAuthHeader(authHeader: String?) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw CustomBadRequestException(
+                RestResponse.unauthorized(
+                    ResponseUtils.messageMapOfParsing(ErrorMessage.NO_AUTHENTICATION_INFORMATION)
+                )
+            )
+        }
     }
 }
