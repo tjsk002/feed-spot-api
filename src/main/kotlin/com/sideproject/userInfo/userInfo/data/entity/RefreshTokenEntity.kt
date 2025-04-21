@@ -17,7 +17,7 @@ data class RefreshTokenEntity(
     val expiryDate: LocalDateTime,
 
     @Column(name = "is_active", nullable = false)
-    val isActive: Boolean,
+    var isActive: Boolean,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -30,8 +30,13 @@ data class RefreshTokenEntity(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", referencedColumnName = "id", nullable = true)
     val admin: AdminEntity? = null
-) {
+) : BasicEntity() {
     enum class Role {
         ADMIN, USER
+    }
+
+    fun deactivate() {
+        if (!this.isActive) throw IllegalStateException("The token is already inactive.")
+        this.isActive = false
     }
 }

@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface RefreshTokenRepository : JpaRepository<RefreshTokenEntity, Long> {
     fun findByAdmin(admin: AdminEntity): RefreshTokenEntity?
     fun findByUser(user: UserEntity): RefreshTokenEntity?
+    fun findByRefreshToken(refreshToken: String): RefreshTokenEntity?
 }
