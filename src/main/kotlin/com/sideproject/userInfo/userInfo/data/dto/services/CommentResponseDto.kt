@@ -1,6 +1,6 @@
 package com.sideproject.userInfo.userInfo.data.dto.services
 
-import com.sideproject.userInfo.userInfo.data.entity.CommentEntity
+import com.sideproject.userInfo.userInfo.data.entity.MovieCommentEntity
 import java.time.LocalDateTime
 
 class CommentResponseDto(
@@ -16,7 +16,7 @@ class CommentsDto(
     val createdAt: LocalDateTime? = null,
 ) {
     companion object {
-        fun fromEntity(commentEntity: CommentEntity): CommentsDto {
+        fun fromEntity(commentEntity: MovieCommentEntity): CommentsDto {
             return CommentsDto(
                 commentEntity.user.id,
                 commentEntity.user.nickName,

@@ -1,1 +1,1 @@
-rootProject.name = "kotlin-project"
+rootProject.name = "feed-spot-api"

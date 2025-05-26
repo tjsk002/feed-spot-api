@@ -5,8 +5,8 @@ import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
-@Table(name = "comment")
-class CommentEntity(
+@Table(name = "movie_comment")
+class MovieCommentEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
@@ -22,8 +22,8 @@ class CommentEntity(
     var targetDate: LocalDate,
 ) : BasicEntity() {
     companion object {
-        fun fromDto(commentRequest: CommentRequest, userEntity: UserEntity): CommentEntity {
-            return CommentEntity(
+        fun fromDto(commentRequest: CommentRequest, userEntity: UserEntity): MovieCommentEntity {
+            return MovieCommentEntity(
                 id = null,
                 user = userEntity,
                 content = commentRequest.content,

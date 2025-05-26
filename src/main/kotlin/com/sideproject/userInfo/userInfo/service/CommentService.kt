@@ -7,7 +7,7 @@ import com.sideproject.userInfo.userInfo.data.dto.services.CommentRequest
 import com.sideproject.userInfo.userInfo.data.dto.services.CommentResponseDto
 import com.sideproject.userInfo.userInfo.data.dto.services.CommentsDto
 import com.sideproject.userInfo.userInfo.data.dto.services.PageInfoDto
-import com.sideproject.userInfo.userInfo.data.entity.CommentEntity
+import com.sideproject.userInfo.userInfo.data.entity.MovieCommentEntity
 import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.repository.CommentRepository
 import org.springframework.data.domain.Page
@@ -22,7 +22,8 @@ class CommentService(
 ) {
     @Transactional(readOnly = true)
     fun getCommentList(pageable: Pageable, date: String): CommentResponseDto {
-        val commentListDto: Page<CommentEntity> = commentRepository.findByTargetDate(LocalDate.parse(date), pageable)
+        val commentListDto: Page<MovieCommentEntity> =
+            commentRepository.findByTargetDate(LocalDate.parse(date), pageable)
         val comment: List<CommentsDto> = commentListDto.map { commentEntity ->
             CommentsDto.fromEntity(commentEntity)
         }.toList()
@@ -38,7 +39,7 @@ class CommentService(
     }
 
     fun createComment(commentRequest: CommentRequest, userEntity: UserEntity): RestResponse<Map<String, Any>> {
-        val newComment: CommentEntity = CommentEntity.fromDto(commentRequest, userEntity)
+        val newComment: MovieCommentEntity = MovieCommentEntity.fromDto(commentRequest, userEntity)
         commentRepository.save(newComment)
         return RestResponse.success(ResponseUtils.messageAddMapOfParsing(SuccessMessage.SUCCESS))
     }
