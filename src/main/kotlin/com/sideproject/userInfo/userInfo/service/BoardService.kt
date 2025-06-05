@@ -2,14 +2,13 @@ package com.sideproject.userInfo.userInfo.service
 
 import com.sideproject.userInfo.userInfo.common.response.ResponseUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
-import com.sideproject.userInfo.userInfo.data.dto.board.BoardDto
-import com.sideproject.userInfo.userInfo.data.dto.board.BoardRequestDto
-import com.sideproject.userInfo.userInfo.data.dto.board.BoardResponseDto
-import com.sideproject.userInfo.userInfo.data.dto.board.PageInfoDto
+import com.sideproject.userInfo.userInfo.data.dto.board.*
 import com.sideproject.userInfo.userInfo.data.entity.BoardEntity
 import com.sideproject.userInfo.userInfo.repository.BoardRepository
+import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,10 +24,7 @@ class BoardService(
         val boardListDto: Page<BoardEntity> = boardRepository.findAll(pageable)
         val boardContent: List<BoardDto> = boardListDto.map { boardEntity -> BoardDto.fromEntity(boardEntity) }.toList()
         val pageInfo = PageInfoDto(
-            boardListDto.number,
-            boardListDto.size,
-            boardListDto.totalElements,
-            boardListDto.totalPages
+            boardListDto.number, boardListDto.size, boardListDto.totalElements, boardListDto.totalPages
         )
         return BoardResponseDto(boardContent, pageInfo)
     }
@@ -47,5 +43,29 @@ class BoardService(
         )
 
         return RestResponse.success(ResponseUtils.messageAddMapOfParsing(boardDto))
+    }
+
+    @Transactional(readOnly = true)
+    fun getBoardDetail(boardId: Long): RestResponse<Map<String, Any>> {
+        val findBoard = findById(boardId)
+        return RestResponse.success(
+            ResponseUtils.messageAddMapOfParsing(BoardDto.fromEntity(findBoard))
+        )
+    }
+
+    fun increaseViewCount(boardDto: ViewCountRequest): RestResponse<Map<String, Any>> {
+        val board = boardRepository.findById(boardDto.boardId)
+            .orElseThrow { IllegalArgumentException("게시글이 존재하지 않습니다.") }
+
+        board.viewCount += 1
+        boardRepository.save(board)
+
+        return RestResponse.success(
+            ResponseUtils.messageAddMapOfParsing(board)
+        )
+    }
+
+    private fun findById(boardId: Long): BoardEntity {
+        return boardRepository.findByIdOrNull(boardId) ?: throw ChangeSetPersister.NotFoundException()
     }
 }

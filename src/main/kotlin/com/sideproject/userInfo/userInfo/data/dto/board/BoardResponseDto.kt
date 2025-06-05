@@ -10,7 +10,7 @@ class BoardResponseDto(
 )
 
 class BoardDto(
-    val userId: Long?,
+    val id: Long?,
     val user: UsersDto,
     val title: String,
     val content: String,

@@ -14,3 +14,7 @@ class BoardRequestDto(
     @field:Size(min = 1, max = 50000, message = "content is between 1 and 50,000 characters.")
     val content: String,
 )
+
+data class ViewCountRequest(
+    val boardId: Long
+)
