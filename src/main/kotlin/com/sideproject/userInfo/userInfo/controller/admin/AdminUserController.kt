@@ -3,7 +3,7 @@ package com.sideproject.userInfo.userInfo.controller.admin
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UserResponseDto
-import com.sideproject.userInfo.userInfo.service.admin.UserService
+import com.sideproject.userInfo.userInfo.service.admin.AdminUserService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/admin/users")
-class UserController(
-    private val userService: UserService
+class AdminUserController(
+    private val userService: AdminUserService
 ) {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
