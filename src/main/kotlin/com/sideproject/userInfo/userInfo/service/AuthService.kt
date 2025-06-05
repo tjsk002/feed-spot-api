@@ -9,7 +9,6 @@ import com.sideproject.userInfo.userInfo.common.response.SuccessMessage
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
 import com.sideproject.userInfo.userInfo.data.dto.users.LoginRequest
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequest
-import com.sideproject.userInfo.userInfo.data.entity.RefreshTokenEntity
 import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import com.sideproject.userInfo.userInfo.repository.admin.RefreshTokenRepository
@@ -159,7 +158,7 @@ class AuthService(
             )
         }
 
-        if (refreshToken != null) {
+        refreshToken?.let {
             val tokenEntity = refreshRepository.findByRefreshToken(refreshToken)
             tokenEntity?.let {
                 it.deactivate()
