@@ -30,7 +30,6 @@ class BoardController(
         return ResponseEntity.ok(boardService.createBoard(boardDto))
     }
 
-
     @GetMapping("/{boardId}")
     fun getBoardDetail(
         @PathVariable(required = true) boardId: Long,
