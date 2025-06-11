@@ -5,7 +5,7 @@ import com.sideproject.userInfo.userInfo.data.entity.BoardEntity
 import java.time.LocalDateTime
 
 class BoardResponseDto(
-    val content: List<BoardDto>,
+    val list: List<BoardDto>,
     val pageInfo: PageInfoDto
 )
 
