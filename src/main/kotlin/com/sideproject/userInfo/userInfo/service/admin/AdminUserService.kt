@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 @Service
-class UserService(
+class AdminUserService(
     private val usersRepository: UsersRepository
 ) {
     @Transactional(readOnly = true)

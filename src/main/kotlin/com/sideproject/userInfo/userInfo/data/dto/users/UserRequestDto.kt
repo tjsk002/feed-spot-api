@@ -29,7 +29,7 @@ class UserRequest(
         message = "type must be one of the following values: 'front', 'back', 'dba', or 'infra'."
     )
     val type: String,
-    
+
     val role: String,
 
     val description: String?
@@ -43,4 +43,12 @@ data class LoginRequest(
     @field :NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     @Size(min = 8, max = 16, message = "비밀번호는 8~16자 이여야 합니다.")
     var password: String
+)
+
+data class MyInfoRequestDto(
+    @field:NotBlank(message = "nickName is required value.")
+    val nickName: String,
+
+    val isActive: Boolean,
+    val description: String?
 )
