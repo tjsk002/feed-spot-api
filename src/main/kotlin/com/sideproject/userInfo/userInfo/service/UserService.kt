@@ -5,10 +5,12 @@ import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
 import com.sideproject.userInfo.userInfo.common.response.ResponseUtils
 import com.sideproject.userInfo.userInfo.common.response.RestResponse
 import com.sideproject.userInfo.userInfo.common.response.exception.BasicException
+import com.sideproject.userInfo.userInfo.data.dto.users.MyInfoRequestDto
 import com.sideproject.userInfo.userInfo.data.entity.UserEntity
 import com.sideproject.userInfo.userInfo.jwt.JwtUtils
 import com.sideproject.userInfo.userInfo.repository.admin.UsersRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
@@ -16,10 +18,7 @@ class UserService(
     private val usersRepository: UsersRepository,
 ) {
     fun myInfo(authHeader: String): RestResponse<Map<String, Any>> {
-        validateAuthHeader(authHeader)
-        val token = authHeader.replace("Bearer ", "")
-        val username = jwtUtils.parseUsername(token)
-        val userEntity = findUserByUserName(username)
+        val userEntity = validateAuthHeader(authHeader)
 
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(
@@ -38,11 +37,21 @@ class UserService(
         )
     }
 
+    @Transactional
+    fun myInfoEdit(authHeader: String, myInfoRequestDto: MyInfoRequestDto): RestResponse<Map<String, Any>> {
+        val userEntity: UserEntity = validateAuthHeader(authHeader)
+        val editUser: UserEntity = userEntity.myInfoEdit(myInfoRequestDto)
+
+        return RestResponse.success(
+            ResponseUtils.messageAddMapOfParsing(editUser)
+        )
+    }
+
     private fun findUserByUserName(username: String): UserEntity {
         return usersRepository.findByUsername(username) ?: throw BasicException(ErrorMessage.USER_NOT_FOUND)
     }
 
-    private fun validateAuthHeader(authHeader: String?) {
+    private fun validateAuthHeader(authHeader: String?): UserEntity {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw CustomBadRequestException(
                 RestResponse.unauthorized(
@@ -50,5 +59,9 @@ class UserService(
                 )
             )
         }
+
+        val token = authHeader.replace("Bearer ", "")
+        val username = jwtUtils.parseUsername(token)
+        return findUserByUserName(username)
     }
 }

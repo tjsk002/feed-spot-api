@@ -1,5 +1,6 @@
 package com.sideproject.userInfo.userInfo.data.entity
 
+import com.sideproject.userInfo.userInfo.data.dto.users.MyInfoRequestDto
 import com.sideproject.userInfo.userInfo.data.dto.users.UserRequestDto
 import jakarta.persistence.*
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -22,6 +23,12 @@ class UserEntity(
     var password: String,
     var description: String?,
 ) : BasicEntity() {
+    fun myInfoEdit(myInfoDto: MyInfoRequestDto): UserEntity {
+        this.nickName = myInfoDto.nickName
+        this.isActive = myInfoDto.isActive
+        this.description = myInfoDto.description
+        return this
+    }
 
     fun editUser(userRequestDto: UserRequestDto): UserEntity {
         this.username = userRequestDto.userData.username
