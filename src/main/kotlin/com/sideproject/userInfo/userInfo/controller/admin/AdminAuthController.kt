@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/admin/auth")
 @Validated
-class AdminController(
+class AdminAuthController(
     private val adminService: AdminService,
 ) {
     @PostMapping("/signup")
