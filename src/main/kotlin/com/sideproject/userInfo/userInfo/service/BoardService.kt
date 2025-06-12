@@ -20,12 +20,22 @@ class BoardService(
 ) {
 
     @Transactional(readOnly = true)
-    fun getBoardList(pageable: Pageable): BoardResponseDto {
-        val boardListDto: Page<BoardEntity> = boardRepository.findAll(pageable)
-        val boardContent: List<BoardDto> = boardListDto.map { boardEntity -> BoardDto.fromEntity(boardEntity) }.toList()
+    fun getBoardList(pageable: Pageable, keyword: String?): BoardResponseDto {
+        val boardListDto: Page<BoardEntity> = if (!keyword.isNullOrBlank()) {
+            boardRepository.findByTitleContainingIgnoreCase(keyword, pageable)
+        } else {
+            boardRepository.findAll(pageable)
+        }
+
+        val boardContent: List<BoardDto> = boardListDto.map { BoardDto.fromEntity(it) }.toList()
+
         val pageInfo = PageInfoDto(
-            boardListDto.number, boardListDto.size, boardListDto.totalElements, boardListDto.totalPages
+            boardListDto.number,
+            boardListDto.size,
+            boardListDto.totalElements,
+            boardListDto.totalPages
         )
+
         return BoardResponseDto(boardContent, pageInfo)
     }
 

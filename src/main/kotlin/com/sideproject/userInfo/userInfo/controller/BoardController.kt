@@ -19,8 +19,9 @@ class BoardController(
     @GetMapping
     fun getBoardList(
         @PageableDefault(size = 10) pageable: Pageable,
+        keyword: String?
     ): ResponseEntity<BoardResponseDto> {
-        return ResponseEntity.ok(boardService.getBoardList(pageable))
+        return ResponseEntity.ok(boardService.getBoardList(pageable, keyword))
     }
 
     @PostMapping
