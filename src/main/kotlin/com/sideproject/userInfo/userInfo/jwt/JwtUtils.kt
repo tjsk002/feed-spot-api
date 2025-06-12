@@ -54,36 +54,48 @@ class JwtUtils(
             .compact()
     }
 
-    fun saveAdminRefreshToken(token: String, refreshToken: String, adminEntity: AdminEntity) {
-        val expiryDate = Instant.now()
-            .plusMillis(refreshExpired)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDateTime()
-        val admin = refreshTokenRepository.findByAdmin(adminEntity)
-        val refreshTokenEntity = RefreshTokenEntity(
-            id = admin?.id,
-            refreshToken = refreshToken,
-            expiryDate = expiryDate,
-            isActive = true,
-            role = RefreshTokenEntity.Role.ADMIN,
-            admin = adminEntity,
-        )
+    fun saveRefreshToken(token: String, refreshToken: String, adminEntity: AdminEntity?, userEntity: UserEntity?) {
+        val expiryDate = expiryDate()
 
-        refreshTokenRepository.save(refreshTokenEntity)
-    }
+        adminEntity?.let {
+            val existingToken = refreshTokenRepository.findByAdmin(adminEntity)
+            if (existingToken != null) {
+                existingToken.refreshToken = refreshToken
+                existingToken.expiryDate = expiryDate
+                existingToken.isActive = true
+                refreshTokenRepository.save(existingToken)
+            } else {
+                val refreshTokenEntity = RefreshTokenEntity(
+                    id = null,
+                    refreshToken = refreshToken,
+                    expiryDate = expiryDate,
+                    isActive = true,
+                    role = RefreshTokenEntity.Role.ADMIN,
+                    admin = adminEntity
+                )
+                refreshTokenRepository.save(refreshTokenEntity)
+            }
+        }
 
-    fun userSaveRefreshToken(token: String, refreshToken: String, userEntity: UserEntity) {
-        val user = refreshTokenRepository.findByUser(userEntity)
-        val refreshTokenEntity = RefreshTokenEntity(
-            id = user?.id,
-            refreshToken = refreshToken,
-            expiryDate = expiryDate(),
-            isActive = true,
-            role = RefreshTokenEntity.Role.USER,
-            user = userEntity,
-        )
-
-        refreshTokenRepository.save(refreshTokenEntity)
+        userEntity?.let {
+            val existingToken = refreshTokenRepository.findByUser(userEntity)
+            if (existingToken != null) {
+                existingToken.refreshToken = refreshToken
+                existingToken.expiryDate = expiryDate
+                existingToken.isActive = true
+                refreshTokenRepository.save(existingToken)
+            } else {
+                val refreshTokenEntity = RefreshTokenEntity(
+                    id = null,
+                    refreshToken = refreshToken,
+                    expiryDate = expiryDate,
+                    isActive = true,
+                    role = RefreshTokenEntity.Role.USER,
+                    user = userEntity
+                )
+                refreshTokenRepository.save(refreshTokenEntity)
+            }
+        }
     }
 
     private fun expiryDate(): LocalDateTime {
@@ -96,7 +108,7 @@ class JwtUtils(
     fun accessValidation(token: String): Boolean {
         return try {
             val claims = getAccessAllClaims(token)
-            isExpired(claims)
+            !isExpired(claims)
         } catch (e: ExpiredJwtException) {
             println("Access token expired: ${e.message}")
             false
@@ -106,7 +118,7 @@ class JwtUtils(
         }
     }
 
-    fun refreshValidation(token: String): Boolean {
+    fun isRefreshTokenExpired(token: String): Boolean {
         return try {
             val claims = getRefreshAllClaims(token)
             isExpired(claims)
@@ -152,6 +164,6 @@ class JwtUtils(
     }
 
     private fun isExpired(claims: Claims): Boolean {
-        return claims.expiration.after(Date())
+        return claims.expiration.before(Date())
     }
 }

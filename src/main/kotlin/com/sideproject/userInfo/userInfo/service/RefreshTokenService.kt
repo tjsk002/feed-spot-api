@@ -1,4 +1,4 @@
-package com.sideproject.userInfo.userInfo.service.admin
+package com.sideproject.userInfo.userInfo.service
 
 import com.sideproject.userInfo.userInfo.common.response.ErrorMessage
 import com.sideproject.userInfo.userInfo.common.response.ResponseUtils
@@ -34,34 +34,32 @@ class RefreshTokenService(
             )
         }
 
-        if (jwtUtils.refreshValidation(refreshToken)) {
-            try {
-                val claims = jwtUtils.getRefreshAllClaims(refreshToken)
-                val newAccessToken = jwtUtils.createAccessToken(
-                    claims.subject, claims["role", String::class.java]
+        try {
+            if (jwtUtils.isRefreshTokenExpired(refreshToken)) {
+                return RestResponse.badRequest(
+                    ResponseUtils.messageMapOfParsing(
+                        ErrorMessage.REFRESH_TOKEN_INVALID
+                    )
                 )
-
-                response.setHeader("Authorization", "Bearer $newAccessToken")
-                val authentication = jwtUtils.getAuthenticationFromToken(newAccessToken)
-                SecurityContextHolder.getContext().authentication = authentication
-                return RestResponse.success(
-                    ResponseUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_REFRESH)
-                )
-            } catch (e: Exception) {
-                println("refreshToken -- $e")
             }
-        } else {
-            return RestResponse.badRequest(
-                ResponseUtils.messageMapOfParsing(
-                    ErrorMessage.REFRESH_TOKEN_INVALID
-                )
+
+            val claims = jwtUtils.getRefreshAllClaims(refreshToken)
+            val newAccessToken = jwtUtils.createAccessToken(
+                claims.subject, claims["role", String::class.java]
+            )
+
+            response.setHeader("Authorization", "Bearer $newAccessToken")
+            val authentication = jwtUtils.getAuthenticationFromToken(newAccessToken)
+            SecurityContextHolder.getContext().authentication = authentication
+
+            return RestResponse.success(
+                ResponseUtils.messageMapOfParsing(ErrorMessage.ACCESS_TOKEN_REFRESH)
+            )
+        } catch (e: Exception) {
+            println("refreshToken -- $e")
+            return RestResponse.unauthorized(
+                ResponseUtils.messageMapOfParsing(ErrorMessage.REFRESH_TOKEN_FAILED)
             )
         }
-
-        return RestResponse.unauthorized(
-            ResponseUtils.messageMapOfParsing(
-                ErrorMessage.REFRESH_TOKEN_FAILED
-            )
-        )
     }
 }

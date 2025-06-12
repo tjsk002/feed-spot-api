@@ -80,8 +80,8 @@ class AuthService(
         val role = authentication.authorities.iterator().next().authority
         val accessToken = jwtUtils.createAccessToken(username, role)
         val refreshToken = jwtUtils.createRefreshToken(username, role)
-        val userEntity = findByUserName(username)
-        jwtUtils.userSaveRefreshToken(accessToken, refreshToken, userEntity)
+        val userEntity = usersRepository.findByUsername(username)
+        jwtUtils.saveRefreshToken(accessToken, refreshToken, null, userEntity)
         response.addHeader("Authorization", "Bearer $accessToken")
         response.addHeader(
             "Set-Cookie",
@@ -91,11 +91,11 @@ class AuthService(
         return RestResponse.success(
             ResponseUtils.messageAddMapOfParsing(
                 mapOf(
-                    "id" to userEntity.id,
-                    "username" to userEntity.username,
-                    "nickName" to userEntity.nickName,
-                    "role" to userEntity.role,
-                    "createdAt" to userEntity.createdAt,
+                    "id" to userEntity?.id,
+                    "username" to userEntity?.username,
+                    "nickName" to userEntity?.nickName,
+                    "role" to userEntity?.role,
+                    "createdAt" to userEntity?.createdAt,
                 )
             )
         )
