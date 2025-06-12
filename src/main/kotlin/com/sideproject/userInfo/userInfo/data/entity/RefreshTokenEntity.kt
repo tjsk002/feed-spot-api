@@ -11,10 +11,10 @@ data class RefreshTokenEntity(
     val id: Long?,
 
     @Column(name = "refresh_token", nullable = false, unique = true)
-    val refreshToken: String,
+    var refreshToken: String,
 
     @Column(name = "expiry_date", nullable = false)
-    val expiryDate: LocalDateTime,
+    var expiryDate: LocalDateTime,
 
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean,
