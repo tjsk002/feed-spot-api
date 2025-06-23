@@ -9,6 +9,7 @@ class NoticeResponseDto(
 )
 
 class NoticeDto(
+    val id: Long?,
     val title: String,
     val content: String,
     val viewCount: Int,
@@ -18,6 +19,7 @@ class NoticeDto(
     companion object {
         fun fromEntity(noticeEntity: NoticeEntity): NoticeDto {
             return NoticeDto(
+                noticeEntity.id,
                 noticeEntity.title,
                 noticeEntity.content,
                 noticeEntity.viewCount,

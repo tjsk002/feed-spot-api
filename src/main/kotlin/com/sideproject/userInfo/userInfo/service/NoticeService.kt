@@ -42,4 +42,12 @@ class NoticeService(
             ResponseUtils.messageAddMapOfParsing(NoticeResponseDto(noticeContent, pageInfo))
         )
     }
+
+    @Transactional(readOnly = true)
+    fun getNoticeDetail(noticeId: Long): RestResponse<Map<String, Any>> {
+        val findNotice = noticeRepository.findById(noticeId)
+        return RestResponse.success(
+            ResponseUtils.messageAddMapOfParsing(NoticeDto.fromEntity(findNotice.get()))
+        )
+    }
 }
