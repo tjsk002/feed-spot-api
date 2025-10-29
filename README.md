@@ -1,3 +1,5 @@
+![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=tjsk002&theme=github_dark&show_icons=true)
+
 ## 환경
 
 #### 사용스택
